@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController { // same comments apply here
     private final List<Map<String, Object>> users = new ArrayList<>();
     private int nextId = 1;
 
@@ -54,7 +54,10 @@ public class UserController {
                     .filter(book -> book.get("borrowedBy") != null && book.get("borrowedBy").equals(id))
                     .toList();
 
-            for (Map<String, Object> book : booksToReturn) {
+            for (Map<String, Object> book : booksToReturn) { // modifying objects from other packages is a very bad practice,
+                // this can lead to spaghetti code - meaning everything mixed whit everything, it's a very quick way to having unmaintainable code
+                // instead use
+                // booksToReturn.forEach(book -> bookController.returnBook(book.getId(), id));
                 book.remove("borrowedBy");
                 book.put("isAvailable", true);
             }
