@@ -2,6 +2,7 @@ package com.example.library.book;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Table;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "books")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

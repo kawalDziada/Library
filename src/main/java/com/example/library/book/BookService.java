@@ -25,7 +25,7 @@ public class BookService {
     public BookDto getBookById(Long id) {
         return bookRepository.findById(id)
                 .map(this::mapToDto)
-                .orElseThrow(() -> new NoSuchElementException("Book not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found with ID " + id));
     }
 
     public Long createBook(NewBookDto newBookDto) {
@@ -41,15 +41,15 @@ public class BookService {
 
     public void deleteBook(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Book not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found with ID " + id));
         bookRepository.delete(book);
     }
 
     public void borrowBook(Long id, UUID userId) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Book not found or not available"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found or not available with ID " + id));
         if (!book.isAvailable()) {
-            throw new IllegalStateException("Book is not available");
+            throw new IllegalStateException("The book with ID " + id + " is already borrowed.");
         }
         book.markBorrowed(userId);
         bookRepository.save(book);
@@ -57,9 +57,9 @@ public class BookService {
 
     public void returnBook(Long id, UUID userId) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Book not found"));
+                .orElseThrow(() -> new NoSuchElementException("Book not found with ID " + id));
         if (!book.getBorrowedBy().equals(userId)) {
-            throw new IllegalStateException("Book is not borrowed by this user");
+            throw new IllegalStateException("The book with ID " + id + " was not borrowed by user with ID " + userId);
         }
         book.release();
         bookRepository.save(book);
