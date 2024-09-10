@@ -4,17 +4,19 @@ import com.example.library.book.dto.BookDto;
 import com.example.library.book.dto.BookEntryDto;
 import com.example.library.book.dto.NewBookDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
+@Slf4j
 class BookController {
     private final BookService bookService;
 
@@ -29,9 +31,10 @@ class BookController {
     }
 
     @PostMapping
-    public String createBook(@RequestBody NewBookDto newBookDto) {
+    public Long createBook(@RequestBody NewBookDto newBookDto) {
         Long bookId = bookService.createBook(newBookDto);
-        return "Book " + newBookDto.getName() + " registered with ID " + bookId;
+        log.info("Book {} registered with ID {}", newBookDto.getName(), bookId);
+        return bookId;
     }
 
     @DeleteMapping("/{id}")
