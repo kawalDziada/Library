@@ -38,9 +38,9 @@ class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable Long id) {
+    public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
-        return "Book with ID " + id + " was deleted.";
+        log.info("Book with ID {} was deleted.", id);
     }
 
     @PatchMapping("/borrow")
