@@ -28,13 +28,13 @@ class BookController {
         return bookService.getBookById(id);
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public String createBook(@RequestBody NewBookDto newBookDto) {
         Long bookId = bookService.createBook(newBookDto);
         return "Book " + newBookDto.getName() + " registered with ID " + bookId;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return "Book with ID " + id + " was deleted.";
