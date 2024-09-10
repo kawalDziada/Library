@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/books")
@@ -41,27 +41,23 @@ class BookController {
     }
 
     @PatchMapping("/borrow")
-    public ResponseEntity<String> borrowBook(@RequestParam Long id, @RequestParam UUID userId) {
-        try {
-            bookService.borrowBook(id, userId);
-            return ResponseEntity.ok("Book with ID " + id + " was borrowed by user with ID " + userId);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public void borrowBook(@RequestParam Long id, @RequestParam UUID userId) {
+        bookService.borrowBook(id, userId);
     }
 
     @PatchMapping("/return")
-    public ResponseEntity<String> returnBook(@RequestParam Long id, @RequestParam UUID userId) {
-        try {
-            bookService.returnBook(id, userId);
-            return ResponseEntity.ok("Book with ID " + id + " was returned by user with ID " + userId);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public void returnBook(@RequestParam Long id, @RequestParam UUID userId) {
+        bookService.returnBook(id, userId);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
