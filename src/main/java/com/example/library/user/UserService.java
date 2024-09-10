@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class UserService {
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(User::mapToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public UserDto getUser(UUID userId) {

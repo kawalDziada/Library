@@ -36,9 +36,10 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String createUser(@RequestBody String name) {
+    public UUID createUser(@RequestBody String name) {
         UUID userId = userService.createUser(new NewUserDto(name));
-        return "User " + name + " registered with id " + userId;
+        System.out.println("User " + name + " registered with id " + userId);
+        return userId;
     }
 
     @DeleteMapping("/unregister/{id}")

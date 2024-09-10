@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-public class BookController {
+class BookController {
     private final BookService bookService;
 
     @GetMapping

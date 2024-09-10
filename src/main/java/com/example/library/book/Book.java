@@ -13,7 +13,7 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name = "books")
-public class Book {
+class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

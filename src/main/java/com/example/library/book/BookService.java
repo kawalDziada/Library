@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class BookService {
     public List<BookEntryDto> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(this::mapToEntryDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BookDto getBookById(Long id) {
