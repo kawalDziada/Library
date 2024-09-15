@@ -1,40 +1,45 @@
 package com.example.library.user;
 
+import com.example.library.book.BookService;
 import com.example.library.user.dto.NewUserDto;
 import com.example.library.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+class UserService {
 
     private final UserRepository userRepository;
+    private final BookService bookService;
 
-    public List<UserDto> getAllUsers() {
+    List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(User::mapToDto)
-                .toList();
+            .map(User::mapToDto)
+            .toList();
     }
 
-    public UserDto getUser(UUID userId) {
+    UserDto getUser(UUID userId) {
         return userRepository.findById(userId)
-                .map(User::mapToDto)
-                .orElseThrow(() -> new NoSuchElementException("User with id %s doesn't exist".formatted(userId)));
+            .map(User::mapToDto)
+            .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
-    public UUID createUser(NewUserDto newUser) {
-        var createdUser = userRepository.save(User.of(newUser.name()));
+    UUID createUser(NewUserDto newUser) {
+        User createdUser = userRepository.save(User.of(newUser.name()));
         return createdUser.getId();
     }
 
-    public void deleteUser(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with id %s doesn't exist".formatted(userId)));
-        userRepository.delete(user);
+    void unregisterUser(UUID userId) {
+        bookService.releaseAllForUser(userId);
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
+
+        userRepository.deleteById(userId);
     }
 }

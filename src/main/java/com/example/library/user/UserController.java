@@ -1,6 +1,5 @@
 package com.example.library.user;
 
-import com.example.library.book.BookService;
 import com.example.library.user.dto.NewUserDto;
 import com.example.library.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import java.util.NoSuchElementException;
 public class UserController {
 
     private final UserService userService;
-    private final BookService bookService;
 
     @GetMapping
     public List<UserDto> getAllUsers() {
@@ -26,13 +24,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
-        try {
-            UserDto user = userService.getUser(id);
-            return ResponseEntity.ok(user);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public UserDto getUserById(@PathVariable UUID id) {
+        return userService.getUser(id);
     }
 
     @PostMapping("/register")
@@ -44,17 +37,18 @@ public class UserController {
 
     @DeleteMapping("/unregister/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        try {
-            bookService.getAllBooks().stream()
-                    .map(book -> bookService.getBookById(book.getId()))
-                    .filter(book -> book.getBorrowedBy() != null && book.getBorrowedBy().equals(id))
-                    .forEach(book -> bookService.returnBook(book.getId(), id));
+        userService.unregisterUser(id);
+        return ResponseEntity.ok("User with ID " + id + " unregistered and all borrowed books returned.");
+    }
 
-            userService.deleteUser(id);
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 
-            return ResponseEntity.ok("User with ID " + id + " unregistered and all borrowed books returned.");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with ID " + id + " not found.");
-        }
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleGeneralException(Exception ex) {
+        return "An unexpected error occurred: " + ex.getMessage();
     }
 }

@@ -1,18 +1,17 @@
 package com.example.library.book.dto;
 
-import lombok.Data;
-
+import lombok.Value;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Data
+@Value
 public class BookDto {
-    private Long id;
-    private String isbn;
-    private String name;
-    private String author;
-    private int pageNumber;
-    private LocalDate publishDate;
-    private boolean isAvailable;
-    private UUID borrowedBy;
+    Long id;
+    String isbn;
+    String name;
+    String author;
+    int pageNumber;
+    LocalDate publishDate;
+    boolean isAvailable;
+    UUID borrowedBy;
 }

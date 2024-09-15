@@ -1,14 +1,13 @@
 package com.example.library.book.dto;
 
-import lombok.Data;
-
+import lombok.Value;
 import java.time.LocalDate;
 
-@Data
+@Value
 public class NewBookDto {
-    private String isbn;
-    private String name;
-    private String author;
-    private int pageNumber;
-    private LocalDate publishDate;
+    String isbn;
+    String name;
+    String author;
+    int pageNumber;
+    LocalDate publishDate;
 }

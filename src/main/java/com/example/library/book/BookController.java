@@ -64,7 +64,8 @@ class BookController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleGeneralException(Exception ex) {
+        return "An unexpected error occurred: " + ex.getMessage();
     }
 }

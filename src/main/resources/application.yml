@@ -9,4 +9,4 @@ spring:
     properties:
       dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
