@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Operating system files
+.DS_Store

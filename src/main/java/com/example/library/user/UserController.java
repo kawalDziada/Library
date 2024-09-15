@@ -1,71 +1,54 @@
 package com.example.library.user;
 
-import com.example.library.book.BookController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import com.example.library.user.dto.NewUserDto;
+import com.example.library.user.dto.UserDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
-public class UserController { // same comments apply here
-    private final List<Map<String, Object>> users = new ArrayList<>();
-    private int nextId = 1;
+@RequiredArgsConstructor
+public class UserController {
 
-    @Autowired
-    @Lazy
-    private BookController bookController;
+    private final UserService userService;
 
     @GetMapping
-    public List<Map<String, Object>> getAllUsers() {
-        return users;
+    public List<UserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public Map<String, Object> getUserById(@PathVariable int id) {
-        return users.stream()
-                .filter(user -> user.get("id").equals(id))
-                .findFirst()
-                .orElse(null);
+    public UserDto getUserById(@PathVariable UUID id) {
+        return userService.getUser(id);
     }
 
     @PostMapping("/register")
-    public String createUser(@RequestBody String name) {
-        Map<String, Object> newUser = new HashMap<>();
-        newUser.put("id", nextId++);
-        newUser.put("name", name);
-        users.add(newUser);
-        return "User " + name + " registered with id " + newUser.get("id");
+    public UUID createUser(@RequestBody String name) {
+        UUID userId = userService.createUser(new NewUserDto(name));
+        System.out.println("User " + name + " registered with id " + userId);
+        return userId;
     }
 
     @DeleteMapping("/unregister/{id}")
-    public String deleteUser(@PathVariable int id) {
-        Map<String, Object> userToRemove = users.stream()
-                .filter(user -> user.get("id").equals(id))
-                .findFirst()
-                .orElse(null);
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+        userService.unregisterUser(id);
+        return ResponseEntity.ok("User with ID " + id + " unregistered and all borrowed books returned.");
+    }
 
-        if (userToRemove != null) {
-            List<Map<String, Object>> booksToReturn = bookController.getAllBooks().stream()
-                    .filter(book -> book.get("borrowedBy") != null && book.get("borrowedBy").equals(id))
-                    .toList();
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 
-            for (Map<String, Object> book : booksToReturn) { // modifying objects from other packages is a very bad practice,
-                // this can lead to spaghetti code - meaning everything mixed whit everything, it's a very quick way to having unmaintainable code
-                // instead use
-                // booksToReturn.forEach(book -> bookController.returnBook(book.getId(), id));
-                book.remove("borrowedBy");
-                book.put("isAvailable", true);
-            }
-
-            users.remove(userToRemove);
-            return "User " + userToRemove.get("name") + " unregistered and all borrowed books returned.";
-        } else {
-            return "User not found";
-        }
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleGeneralException(Exception ex) {
+        return "An unexpected error occurred: " + ex.getMessage();
     }
 }
