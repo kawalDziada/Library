@@ -13,8 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class UserServiceTest {
 
@@ -33,7 +37,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers() {
+    void shouldGetAllUsers() {
         UUID userId1 = UUID.randomUUID();
         UUID userId2 = UUID.randomUUID();
         User user1 = new User(userId1, "John Doe");
@@ -56,7 +60,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUser() {
+    void shouldGetUser() {
         UUID userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -70,7 +74,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser() {
+    void shouldCreateUser() {
         NewUserDto newUserDto = new NewUserDto("John Doe");
         User user = new User(UUID.randomUUID(), "John Doe");
 
@@ -83,7 +87,7 @@ class UserServiceTest {
     }
 
     @Test
-    void unregisterUser() {
+    void shouldUnregisterUser() {
         UUID userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
 

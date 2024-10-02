@@ -14,8 +14,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class BookServiceTest {
 
@@ -65,7 +71,7 @@ class BookServiceTest {
     }
 
     @Test
-    void getBookById() {
+    void shouldGetBookById() {
         Book book = new Book();
         book.setId(1L);
         book.setIsbn("123456789");
@@ -88,7 +94,7 @@ class BookServiceTest {
     }
 
     @Test
-    void createBook() {
+    void shouldCreateBook() {
         NewBookDto newBookDto = new NewBookDto("123456789", "New Book", "New Author", 150, LocalDate.of(2021, 6, 15));
         Book book = Book.ofNew(newBookDto);
         book.setId(1L);
@@ -106,7 +112,7 @@ class BookServiceTest {
     }
 
     @Test
-    void deleteBook() {
+    void shouldDeleteBook() {
         Book book = new Book();
         book.setId(1L);
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
@@ -117,7 +123,7 @@ class BookServiceTest {
     }
 
     @Test
-    void borrowBook() {
+    void shouldBorrowBook() {
         Book book = new Book();
         book.setId(1L);
         book.setAvailable(true);
@@ -132,7 +138,7 @@ class BookServiceTest {
     }
 
     @Test
-    void returnBook() {
+    void shouldReturnBook() {
         UUID userId = UUID.randomUUID();
         Book book = new Book();
         book.setId(1L);
@@ -148,7 +154,7 @@ class BookServiceTest {
     }
 
     @Test
-    void releaseAllForUser() {
+    void shouldReleaseAllForUser() {
         UUID userId = UUID.randomUUID();
         Book book1 = new Book();
         book1.setId(1L);
