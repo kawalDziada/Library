@@ -76,7 +76,7 @@ class UserServiceTest {
     @Test
     void shouldCreateUser() {
         NewUserDto newUserDto = new NewUserDto("John Doe");
-        User user = new User(UUID.randomUUID(), "John Doe");
+        User user = User.of("John Doe");
 
         when(userRepository.save(any(User.class))).thenReturn(user);
 

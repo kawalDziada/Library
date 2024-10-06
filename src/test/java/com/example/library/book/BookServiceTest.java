@@ -38,17 +38,8 @@ class BookServiceTest {
 
     @Test
     void getAllBooks() {
-        Book book1 = new Book();
-        book1.setId(1L);
-        book1.setName("Book One");
-        book1.setAuthor("Author One");
-        book1.setAvailable(true);
-
-        Book book2 = new Book();
-        book2.setId(2L);
-        book2.setName("Book Two");
-        book2.setAuthor("Author Two");
-        book2.setAvailable(false);
+        Book book1 = new Book(1L, "123456789", "Book One", "Author One", 200, LocalDate.of(2020, 1, 1), true);
+        Book book2 = new Book(2L, "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false);
 
         when(bookRepository.findAll()).thenReturn(List.of(book1, book2));
 
@@ -72,13 +63,8 @@ class BookServiceTest {
 
     @Test
     void shouldGetBookById() {
-        Book book = new Book();
-        book.setId(1L);
-        book.setIsbn("123456789");
-        book.setName("Book One");
-        book.setAuthor("Author One");
-        book.setPageNumber(300);
-        book.setPublishDate(LocalDate.of(2020, 1, 1));
+        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true);
+
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         BookDto result = bookService.getBookById(1L);
@@ -97,7 +83,6 @@ class BookServiceTest {
     void shouldCreateBook() {
         NewBookDto newBookDto = new NewBookDto("123456789", "New Book", "New Author", 150, LocalDate.of(2021, 6, 15));
         Book book = Book.ofNew(newBookDto);
-        book.setId(1L);
 
         when(bookRepository.save(any(Book.class))).thenAnswer(invocation -> {
             Book savedBook = invocation.getArgument(0);
@@ -113,8 +98,8 @@ class BookServiceTest {
 
     @Test
     void shouldDeleteBook() {
-        Book book = new Book();
-        book.setId(1L);
+        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true);
+
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         bookService.deleteBook(1L);
@@ -124,10 +109,9 @@ class BookServiceTest {
 
     @Test
     void shouldBorrowBook() {
-        Book book = new Book();
-        book.setId(1L);
-        book.setAvailable(true);
         UUID userId = UUID.randomUUID();
+        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true);
+
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         bookService.borrowBook(1L, userId);
@@ -140,10 +124,9 @@ class BookServiceTest {
     @Test
     void shouldReturnBook() {
         UUID userId = UUID.randomUUID();
-        Book book = new Book();
-        book.setId(1L);
-        book.setBorrowedBy(userId);
-        book.setAvailable(false);
+        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), false);
+        book.markBorrowed(userId);
+
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         bookService.returnBook(1L, userId);
@@ -156,15 +139,11 @@ class BookServiceTest {
     @Test
     void shouldReleaseAllForUser() {
         UUID userId = UUID.randomUUID();
-        Book book1 = new Book();
-        book1.setId(1L);
-        book1.setBorrowedBy(userId);
-        book1.setAvailable(false);
+        Book book1 = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), false);
+        book1.markBorrowed(userId);
 
-        Book book2 = new Book();
-        book2.setId(2L);
-        book2.setBorrowedBy(userId);
-        book2.setAvailable(false);
+        Book book2 = new Book(2L, "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false);
+        book2.markBorrowed(userId);
 
         when(bookRepository.findAll()).thenReturn(List.of(book1, book2));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book1));

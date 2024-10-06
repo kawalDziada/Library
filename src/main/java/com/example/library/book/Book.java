@@ -27,14 +27,29 @@ class Book {
     private boolean isAvailable = true;
     private UUID borrowedBy;
 
+    protected Book() {
+    }
+
+    public Book(Long id, String isbn, String name, String author, int pageNumber, LocalDate publishDate, boolean isAvailable) {
+        this.id = id;
+        this.isbn = isbn;
+        this.name = name;
+        this.author = author;
+        this.pageNumber = pageNumber;
+        this.publishDate = publishDate;
+        this.isAvailable = isAvailable;
+    }
+
     public static Book ofNew(NewBookDto newBookDto) {
-        Book book = new Book();
-        book.setIsbn(newBookDto.getIsbn());
-        book.setName(newBookDto.getName());
-        book.setAuthor(newBookDto.getAuthor());
-        book.setPageNumber(newBookDto.getPageNumber());
-        book.setPublishDate(newBookDto.getPublishDate());
-        return book;
+        return new Book(
+                null,
+                newBookDto.getIsbn(),
+                newBookDto.getName(),
+                newBookDto.getAuthor(),
+                newBookDto.getPageNumber(),
+                newBookDto.getPublishDate(),
+                true
+        );
     }
 
     public void markBorrowed(UUID userId) {
