@@ -37,7 +37,7 @@ class BookServiceTest {
     }
 
     @Test
-    void getAllBooks() {
+    void shouldGetAllBooks() {
         Book book1 = new Book(1L, "123456789", "Book One", "Author One", 200, LocalDate.of(2020, 1, 1), true);
         Book book2 = new Book(2L, "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false);
 
