@@ -14,7 +14,7 @@ import com.example.library.book.dto.NewBookDto;
 @Entity
 @Data
 @Table(name = "books")
-class Book {
+public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

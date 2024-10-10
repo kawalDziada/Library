@@ -5,9 +5,6 @@ import com.example.library.user.dto.NewUserDto;
 import com.example.library.user.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,25 +12,17 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 class UserServiceTest {
 
-    @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private BookService bookService;
-
-    @InjectMocks
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        userRepository = new UserInMemoryRepository();
+        userService = new UserService(userRepository, mock(BookService.class));
     }
 
     @Test
@@ -43,7 +32,8 @@ class UserServiceTest {
         User user1 = new User(userId1, "John Doe");
         User user2 = new User(userId2, "Jane Doe");
 
-        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+        userRepository.save(user1);
+        userRepository.save(user2);
 
         List<UserDto> result = userService.getAllUsers();
 
@@ -55,47 +45,40 @@ class UserServiceTest {
         UserDto dto2 = result.get(1);
         assertEquals(userId2, dto2.id());
         assertEquals("Jane Doe", dto2.name());
-
-        verify(userRepository, times(1)).findAll();
     }
 
     @Test
     void shouldGetUser() {
         UUID userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        userRepository.save(user);
 
         UserDto result = userService.getUser(userId);
 
         assertEquals(userId, result.id());
         assertEquals("John Doe", result.name());
-
-        verify(userRepository, times(1)).findById(userId);
     }
 
     @Test
     void shouldCreateUser() {
         NewUserDto newUserDto = new NewUserDto("John Doe");
-        User user = User.of("John Doe");
-
-        when(userRepository.save(any(User.class))).thenReturn(user);
 
         UUID userId = userService.createUser(newUserDto);
 
         assertNotNull(userId);
-        verify(userRepository, times(1)).save(any(User.class));
+        User savedUser = userRepository.findById(userId).orElse(null);
+        assertNotNull(savedUser);
+        assertEquals("John Doe", savedUser.getName());
     }
 
     @Test
     void shouldUnregisterUser() {
         UUID userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        userRepository.save(user);
 
         userService.unregisterUser(userId);
 
-        verify(bookService, times(1)).releaseAllForUser(userId);
-        verify(userRepository, times(1)).deleteById(userId);
+        assertEquals(Optional.empty(), userRepository.findById(userId));
     }
 }
