@@ -7,11 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 class UserServiceTest {
@@ -27,6 +25,7 @@ class UserServiceTest {
 
     @Test
     void shouldGetAllUsers() {
+        // given
         UUID userId1 = UUID.randomUUID();
         UUID userId2 = UUID.randomUUID();
         User user1 = new User(userId1, "John Doe");
@@ -35,50 +34,63 @@ class UserServiceTest {
         userRepository.save(user1);
         userRepository.save(user2);
 
+        // when
         List<UserDto> result = userService.getAllUsers();
 
-        assertEquals(2, result.size());
-        UserDto dto1 = result.get(0);
-        assertEquals(userId1, dto1.id());
-        assertEquals("John Doe", dto1.name());
+        // then
+        assertThat(result).hasSize(2);
 
-        UserDto dto2 = result.get(1);
-        assertEquals(userId2, dto2.id());
-        assertEquals("Jane Doe", dto2.name());
+        UserDto dto1 = result.stream().filter(dto -> dto.id().equals(userId1)).findFirst().orElseThrow();
+        assertThat(dto1.id()).isEqualTo(userId1);
+        assertThat(dto1.name()).isEqualTo("John Doe");
+
+        UserDto dto2 = result.stream().filter(dto -> dto.id().equals(userId2)).findFirst().orElseThrow();
+        assertThat(dto2.id()).isEqualTo(userId2);
+        assertThat(dto2.name()).isEqualTo("Jane Doe");
     }
 
     @Test
     void shouldGetUser() {
+        // given
         UUID userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         userRepository.save(user);
 
+        // when
         UserDto result = userService.getUser(userId);
 
-        assertEquals(userId, result.id());
-        assertEquals("John Doe", result.name());
+        // then
+        assertThat(result.id()).isEqualTo(userId);
+        assertThat(result.name()).isEqualTo("John Doe");
     }
 
     @Test
     void shouldCreateUser() {
+        // given
         NewUserDto newUserDto = new NewUserDto("John Doe");
 
+        // when
         UUID userId = userService.createUser(newUserDto);
 
-        assertNotNull(userId);
+        // then
+        assertThat(userId).isNotNull();
+
         User savedUser = userRepository.findById(userId).orElse(null);
-        assertNotNull(savedUser);
-        assertEquals("John Doe", savedUser.getName());
+        assertThat(savedUser).isNotNull();
+        assertThat(savedUser.getName()).isEqualTo("John Doe");
     }
 
     @Test
     void shouldUnregisterUser() {
+        // given
         UUID userId = UUID.randomUUID();
         User user = new User(userId, "John Doe");
         userRepository.save(user);
 
+        // when
         userService.unregisterUser(userId);
 
-        assertEquals(Optional.empty(), userRepository.findById(userId));
+        // then
+        assertThat(userRepository.findById(userId)).isEmpty();
     }
 }

@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BookServiceTest {
 
@@ -39,18 +36,19 @@ class BookServiceTest {
         List<BookEntryDto> result = bookService.getAllBooks();
 
         // then
-        assertEquals(2, result.size());
-        BookEntryDto dto1 = result.get(0);
-        assertEquals(1L, dto1.getId());
-        assertEquals("Book One", dto1.getName());
-        assertEquals("Author One", dto1.getAuthor());
-        assertTrue(dto1.isAvailable());
+        assertThat(result).hasSize(2);
+
+        BookEntryDto dto1 = result.stream().findFirst().orElseThrow();
+        assertThat(dto1.getId()).isEqualTo(1L);
+        assertThat(dto1.getName()).isEqualTo("Book One");
+        assertThat(dto1.getAuthor()).isEqualTo("Author One");
+        assertThat(dto1.isAvailable()).isTrue();
 
         BookEntryDto dto2 = result.get(1);
-        assertEquals(2L, dto2.getId());
-        assertEquals("Book Two", dto2.getName());
-        assertEquals("Author Two", dto2.getAuthor());
-        assertFalse(dto2.isAvailable());
+        assertThat(dto2.getId()).isEqualTo(2L);
+        assertThat(dto2.getName()).isEqualTo("Book Two");
+        assertThat(dto2.getAuthor()).isEqualTo("Author Two");
+        assertThat(dto2.isAvailable()).isFalse();
     }
 
     @Test
@@ -63,29 +61,28 @@ class BookServiceTest {
         BookDto result = bookService.getBookById(1L);
 
         // then
-        assertEquals(1L, result.getId());
-        assertEquals("123456789", result.getIsbn());
-        assertEquals("Book One", result.getName());
-        assertEquals("Author One", result.getAuthor());
-        assertEquals(300, result.getPageNumber());
-        assertEquals(LocalDate.of(2020, 1, 1), result.getPublishDate());
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getIsbn()).isEqualTo("123456789");
+        assertThat(result.getName()).isEqualTo("Book One");
+        assertThat(result.getAuthor()).isEqualTo("Author One");
+        assertThat(result.getPageNumber()).isEqualTo(300);
+        assertThat(result.getPublishDate()).isEqualTo(LocalDate.of(2020, 1, 1));
     }
 
     @Test
     void shouldCreateBook() {
         // given
         NewBookDto newBookDto = new NewBookDto("123456789", "New Book", "New Author", 150, LocalDate.of(2021, 6, 15));
-        Book book = Book.ofNew(newBookDto);
 
         // when
         Long bookId = bookService.createBook(newBookDto);
 
         // then
         Book savedBook = bookRepository.findById(bookId).orElseThrow();
-        assertEquals(1L, savedBook.getId());
-        assertEquals("123456789", savedBook.getIsbn());
-        assertEquals("New Book", savedBook.getName());
-        assertEquals("New Author", savedBook.getAuthor());
+        assertThat(savedBook.getId()).isEqualTo(1L);
+        assertThat(savedBook.getIsbn()).isEqualTo("123456789");
+        assertThat(savedBook.getName()).isEqualTo("New Book");
+        assertThat(savedBook.getAuthor()).isEqualTo("New Author");
     }
 
     @Test
@@ -99,7 +96,7 @@ class BookServiceTest {
 
         // then
         Optional<Book> deletedBook = bookRepository.findById(1L);
-        assertTrue(deletedBook.isEmpty());
+        assertThat(deletedBook).isEmpty();
     }
 
     @Test
@@ -114,8 +111,8 @@ class BookServiceTest {
 
         // then
         Book borrowedBook = bookRepository.findById(1L).orElseThrow();
-        assertFalse(borrowedBook.isAvailable());
-        assertEquals(userId, borrowedBook.getBorrowedBy());
+        assertThat(borrowedBook.isAvailable()).isFalse();
+        assertThat(borrowedBook.getBorrowedBy()).isEqualTo(userId);
     }
 
     @Test
@@ -131,8 +128,8 @@ class BookServiceTest {
 
         // then
         Book returnedBook = bookRepository.findById(1L).orElseThrow();
-        assertTrue(returnedBook.isAvailable());
-        assertNull(returnedBook.getBorrowedBy());
+        assertThat(returnedBook.isAvailable()).isTrue();
+        assertThat(returnedBook.getBorrowedBy()).isNull();
     }
 
     @Test
@@ -150,7 +147,7 @@ class BookServiceTest {
         bookService.releaseAllForUser(userId);
 
         // then
-        assertTrue(bookRepository.findById(1L).orElseThrow().isAvailable());
-        assertTrue(bookRepository.findById(2L).orElseThrow().isAvailable());
+        assertThat(bookRepository.findById(1L).orElseThrow().isAvailable()).isTrue();
+        assertThat(bookRepository.findById(2L).orElseThrow().isAvailable()).isTrue();
     }
 }
