@@ -5,7 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -14,6 +16,8 @@ import com.example.library.book.dto.NewBookDto;
 @Entity
 @Data
 @Table(name = "books")
+@NoArgsConstructor
+@AllArgsConstructor
 class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,13 +32,16 @@ class Book {
     private UUID borrowedBy;
 
     public static Book ofNew(NewBookDto newBookDto) {
-        Book book = new Book();
-        book.setIsbn(newBookDto.getIsbn());
-        book.setName(newBookDto.getName());
-        book.setAuthor(newBookDto.getAuthor());
-        book.setPageNumber(newBookDto.getPageNumber());
-        book.setPublishDate(newBookDto.getPublishDate());
-        return book;
+        return new Book(
+                null,
+                newBookDto.getIsbn(),
+                newBookDto.getName(),
+                newBookDto.getAuthor(),
+                newBookDto.getPageNumber(),
+                newBookDto.getPublishDate(),
+                true,
+                null
+        );
     }
 
     public void markBorrowed(UUID userId) {
