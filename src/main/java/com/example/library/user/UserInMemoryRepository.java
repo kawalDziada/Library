@@ -1,11 +1,6 @@
 package com.example.library.user;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Example;
-import org.springframework.data.repository.query.FluentQuery;
+import com.example.library.utils.BaseInMemoryRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
-public class UserInMemoryRepository implements UserRepository {
+public class UserInMemoryRepository extends BaseInMemoryRepository<User, UUID> implements UserRepository {
     private final Map<UUID, User> userStorage = new ConcurrentHashMap<>();
 
     @Override
@@ -81,101 +75,34 @@ public class UserInMemoryRepository implements UserRepository {
     }
 
     @Override
-    public List<User> findAll(Sort sort) {
-        return new ArrayList<>(userStorage.values());
-    }
-
-    @Override
-    public Page<User> findAll(Pageable pageable) {
-        List<User> users = new ArrayList<>(userStorage.values());
-        return new PageImpl<>(users, pageable, users.size());
-    }
-
-    @Override
     public void flush() {}
 
     @Override
     public <S extends User> S saveAndFlush(S entity) {
-        return save(entity);
+        S savedEntity = save(entity);
+        flush();
+        return savedEntity;
     }
 
     @Override
     public <S extends User> List<S> saveAllAndFlush(Iterable<S> entities) {
-        return saveAll(entities);
-    }
-
-    @Override
-    public void deleteAllInBatch() {
-        deleteAll();
-    }
-
-    @Override
-    public void deleteAllInBatch(Iterable<User> users) {
-        deleteAll(users);
-    }
-
-    @Override
-    public void deleteAllByIdInBatch(Iterable<UUID> ids) {
-        deleteAllById(ids);
+        List<S> savedEntities = saveAll(entities);
+        flush();
+        return savedEntities;
     }
 
     @Override
     public User getOne(UUID id) {
-        return getReferenceById(id);
+        return getById(id);
     }
 
     @Override
     public User getById(UUID id) {
-        return getReferenceById(id);
-    }
-
-    @Override
-    public User getReferenceById(UUID id) {
         return userStorage.get(id);
     }
 
     @Override
-    public <S extends User> Optional<S> findOne(Example<S> example) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <S extends User> List<S> findAll(Example<S> example) {
-        return List.of();
-    }
-
-    @Override
-    public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
-        return List.of();
-    }
-
-    @Override
-    public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return Page.empty();
-    }
-
-    @Override
-    public <S extends User> long count(Example<S> example) {
-        return 0;
-    }
-
-    @Override
-    public <S extends User> boolean exists(Example<S> example) {
-        return false;
-    }
-
-    @Override
-    public <S extends User, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
-        return null;
-    }
-
-    @Override
-    public <S extends User> List<S> saveAll(Iterable<S> entities) {
-        List<S> savedUsers = new ArrayList<>();
-        for (S user : entities) {
-            save(user);
-            savedUsers.add(user);
-        }
-        return savedUsers;
+    public User getReferenceById(UUID id) {
+        return getById(id);
     }
 }

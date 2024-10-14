@@ -14,13 +14,12 @@ import static org.mockito.Mockito.mock;
 
 class UserServiceTest {
 
-    private UserRepository userRepository;
-    private UserService userService;
+    private final UserRepository userRepository = new UserInMemoryRepository();
+    private final UserService userService = new UserService(userRepository, mock(BookService.class));
 
     @BeforeEach
     void setUp() {
-        userRepository = new UserInMemoryRepository();
-        userService = new UserService(userRepository, mock(BookService.class));
+        userRepository.deleteAll();
     }
 
     @Test
@@ -41,12 +40,15 @@ class UserServiceTest {
         assertThat(result).hasSize(2);
 
         UserDto dto1 = result.stream().filter(dto -> dto.id().equals(userId1)).findFirst().orElseThrow();
-        assertThat(dto1.id()).isEqualTo(userId1);
-        assertThat(dto1.name()).isEqualTo("John Doe");
-
         UserDto dto2 = result.stream().filter(dto -> dto.id().equals(userId2)).findFirst().orElseThrow();
-        assertThat(dto2.id()).isEqualTo(userId2);
-        assertThat(dto2.name()).isEqualTo("Jane Doe");
+
+        assertThat(dto1)
+                .returns(userId1, UserDto::id)
+                .returns("John Doe", UserDto::name);
+
+        assertThat(dto2)
+                .returns(userId2, UserDto::id)
+                .returns("Jane Doe", UserDto::name);
     }
 
     @Test
@@ -60,8 +62,9 @@ class UserServiceTest {
         UserDto result = userService.getUser(userId);
 
         // then
-        assertThat(result.id()).isEqualTo(userId);
-        assertThat(result.name()).isEqualTo("John Doe");
+        assertThat(result)
+                .returns(userId, UserDto::id)
+                .returns("John Doe", UserDto::name);
     }
 
     @Test
@@ -77,7 +80,8 @@ class UserServiceTest {
 
         User savedUser = userRepository.findById(userId).orElse(null);
         assertThat(savedUser).isNotNull();
-        assertThat(savedUser.getName()).isEqualTo("John Doe");
+        assertThat(savedUser)
+                .returns("John Doe", User::getName);
     }
 
     @Test

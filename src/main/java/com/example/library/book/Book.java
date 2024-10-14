@@ -5,7 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -14,7 +16,9 @@ import com.example.library.book.dto.NewBookDto;
 @Entity
 @Data
 @Table(name = "books")
-public class Book {
+@NoArgsConstructor
+@AllArgsConstructor
+class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -27,19 +31,6 @@ public class Book {
     private boolean isAvailable = true;
     private UUID borrowedBy;
 
-    protected Book() {
-    }
-
-    public Book(Long id, String isbn, String name, String author, int pageNumber, LocalDate publishDate, boolean isAvailable) {
-        this.id = id;
-        this.isbn = isbn;
-        this.name = name;
-        this.author = author;
-        this.pageNumber = pageNumber;
-        this.publishDate = publishDate;
-        this.isAvailable = isAvailable;
-    }
-
     public static Book ofNew(NewBookDto newBookDto) {
         return new Book(
                 null,
@@ -48,7 +39,8 @@ public class Book {
                 newBookDto.getAuthor(),
                 newBookDto.getPageNumber(),
                 newBookDto.getPublishDate(),
-                true
+                true,
+                null
         );
     }
 
