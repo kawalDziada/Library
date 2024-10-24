@@ -35,7 +35,7 @@ public class BookService {
     }
 
     Long createBook(NewBookDto newBookDto) {
-        Book book = Book.ofNew(newBookDto);
+        Book book = BookMapper.INSTANCE.toBook(newBookDto);
         bookRepository.save(book);
         return book.getId();
     }
