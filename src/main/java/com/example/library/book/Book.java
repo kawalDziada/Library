@@ -31,8 +31,17 @@ class Book {
     private boolean isAvailable = true;
     private UUID borrowedBy;
 
-    public static Book fromDto(NewBookDto newBookDto) {
-        return BookMapper.INSTANCE.toBook(newBookDto);
+    public static Book ofNew(NewBookDto newBookDto) {
+        return new Book(
+                null,
+                newBookDto.getIsbn(),
+                newBookDto.getName(),
+                newBookDto.getAuthor(),
+                newBookDto.getPageNumber(),
+                newBookDto.getPublishDate(),
+                true,
+                null
+        );
     }
 
     public void markBorrowed(UUID userId) {
