@@ -121,7 +121,17 @@ public abstract class BaseInMemoryRepository<T, ID> implements JpaRepository<T, 
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<ID> ids) {
+    public void flush() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <S extends T> S saveAndFlush(S entity) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <S extends T> List<S> saveAllAndFlush(Iterable<S> entities) {
         throw new UnsupportedOperationException();
     }
 
@@ -132,6 +142,26 @@ public abstract class BaseInMemoryRepository<T, ID> implements JpaRepository<T, 
 
     @Override
     public void deleteAllInBatch(Iterable<T> entities) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<ID> ids) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public T getOne(ID id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public T getById(ID id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public T getReferenceById(ID id) {
         throw new UnsupportedOperationException();
     }
 }
