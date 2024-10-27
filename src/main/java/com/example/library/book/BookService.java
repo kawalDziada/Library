@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     private static class BookNotFoundException extends NoSuchElementException {
         private BookNotFoundException(Long id) {
@@ -35,7 +36,7 @@ public class BookService {
     }
 
     Long createBook(NewBookDto newBookDto) {
-        Book book = Book.ofNew(newBookDto);
+        Book book = bookMapper.fromNewBookDto(newBookDto);
         bookRepository.save(book);
         return book.getId();
     }

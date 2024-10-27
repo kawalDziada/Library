@@ -5,6 +5,7 @@ import com.example.library.book.dto.BookEntryDto;
 import com.example.library.book.dto.NewBookDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BookServiceTest {
 
     private final BookRepository bookRepository = new BookInMemoryRepository();
-    private final BookService bookService = new BookService(bookRepository);
+    private final BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
+    private final BookService bookService = new BookService(bookRepository, bookMapper);
 
     @BeforeEach
     void setUp() {

@@ -28,7 +28,7 @@ class Book {
     private String author;
     private int pageNumber;
     private LocalDate publishDate;
-    private boolean isAvailable = true;
+    private boolean available = true;
     private UUID borrowedBy;
 
     public static Book ofNew(NewBookDto newBookDto) {
@@ -45,12 +45,12 @@ class Book {
     }
 
     public void markBorrowed(UUID userId) {
-        this.isAvailable = false;
+        this.available = false;
         this.borrowedBy = userId;
     }
 
     public void release() {
-        this.isAvailable = true;
+        this.available = true;
         this.borrowedBy = null;
     }
 
