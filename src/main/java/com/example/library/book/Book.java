@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import com.example.library.book.dto.NewBookDto;
 
 @Entity
 @Data
@@ -20,7 +19,7 @@ import com.example.library.book.dto.NewBookDto;
 @AllArgsConstructor
 class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private UUID id;
 
     private String isbn;
@@ -30,19 +29,6 @@ class Book {
     private LocalDate publishDate;
     private boolean available = true;
     private UUID borrowedBy;
-
-    public static Book ofNew(NewBookDto newBookDto) {
-        return new Book(
-                null,
-                newBookDto.getIsbn(),
-                newBookDto.getName(),
-                newBookDto.getAuthor(),
-                newBookDto.getPageNumber(),
-                newBookDto.getPublishDate(),
-                true,
-                null
-        );
-    }
 
     public void markBorrowed(UUID userId) {
         this.available = false;
