@@ -4,7 +4,7 @@ import com.example.library.book.dto.NewBookDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface BookMapper {
 
     @Mapping(target = "id", ignore = true)

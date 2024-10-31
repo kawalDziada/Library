@@ -77,10 +77,8 @@ class UserServiceTest {
 
         // then
         assertThat(userId).isNotNull();
-
-        User savedUser = userRepository.findById(userId).orElse(null);
-        assertThat(savedUser).isNotNull();
-        assertThat(savedUser)
+        assertThat(userRepository.findAll())
+                .singleElement()
                 .returns("John Doe", User::getName);
     }
 
