@@ -6,23 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BookInMemoryRepository extends BaseInMemoryRepository<Book, Long> implements BookRepository {
-    private final Map<Long, Book> bookStorage = new ConcurrentHashMap<>();
-    private long currentId = 1L;
+public class BookInMemoryRepository extends BaseInMemoryRepository<Book, UUID> implements BookRepository {
+    private final Map<UUID, Book> bookStorage = new ConcurrentHashMap<>();
 
     @Override
     public <S extends Book> S save(S entity) {
         if (entity.getId() == null) {
-            entity.setId(currentId++);
+            entity.setId(UUID.randomUUID());
         }
         bookStorage.put(entity.getId(), entity);
         return entity;
     }
 
     @Override
-    public Optional<Book> findById(Long id) {
+    public Optional<Book> findById(UUID id) {
         return Optional.ofNullable(bookStorage.get(id));
     }
 
@@ -37,7 +37,7 @@ public class BookInMemoryRepository extends BaseInMemoryRepository<Book, Long> i
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         bookStorage.remove(id);
     }
 

@@ -28,8 +28,8 @@ class BookServiceTest {
     @Test
     void shouldGetAllBooks() {
         // given
-        Book book1 = new Book(1L, "123456789", "Book One", "Author One", 200, LocalDate.of(2020, 1, 1), true, null);
-        Book book2 = new Book(2L, "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false, null);
+        Book book1 = new Book(UUID.randomUUID(), "123456789", "Book One", "Author One", 200, LocalDate.of(2020, 1, 1), true, null);
+        Book book2 = new Book(UUID.randomUUID(), "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false, null);
         bookRepository.save(book1);
         bookRepository.save(book2);
 
@@ -58,11 +58,12 @@ class BookServiceTest {
     @Test
     void shouldGetBookById() {
         // given
-        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true, null);
+        UUID bookId = UUID.randomUUID();
+        Book book = new Book(bookId, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true, null);
         bookRepository.save(book);
 
         // when
-        BookDto result = bookService.getBookById(1L);
+        BookDto result = bookService.getBookById(bookId);
 
         // then
         assertThat(result)
@@ -80,12 +81,12 @@ class BookServiceTest {
         NewBookDto newBookDto = new NewBookDto("123456789", "New Book", "New Author", 150, LocalDate.of(2021, 6, 15));
 
         // when
-        Long bookId = bookService.createBook(newBookDto);
+        UUID bookId = bookService.createBook(newBookDto);
 
         // then
         Book savedBook = bookRepository.findById(bookId).orElseThrow();
         assertThat(savedBook)
-                .returns(1L, Book::getId)
+                .returns(bookId, Book::getId)
                 .returns("123456789", Book::getIsbn)
                 .returns("New Book", Book::getName)
                 .returns("New Author", Book::getAuthor);
@@ -94,29 +95,31 @@ class BookServiceTest {
     @Test
     void shouldDeleteBook() {
         // given
-        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true, null);
+        UUID bookId = UUID.randomUUID();
+        Book book = new Book(bookId, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true, null);
         bookRepository.save(book);
 
         // when
-        bookService.deleteBook(1L);
+        bookService.deleteBook(bookId);
 
         // then
-        Optional<Book> deletedBook = bookRepository.findById(1L);
+        Optional<Book> deletedBook = bookRepository.findById(bookId);
         assertThat(deletedBook).isEmpty();
     }
 
     @Test
     void shouldBorrowBook() {
         // given
+        UUID bookId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true, null);
+        Book book = new Book(bookId, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), true, null);
         bookRepository.save(book);
 
         // when
-        bookService.borrowBook(1L, userId);
+        bookService.borrowBook(bookId, userId);
 
         // then
-        Book borrowedBook = bookRepository.findById(1L).orElseThrow();
+        Book borrowedBook = bookRepository.findById(bookId).orElseThrow();
         assertThat(borrowedBook)
                 .returns(false, Book::isAvailable)
                 .returns(userId, Book::getBorrowedBy);
@@ -125,15 +128,16 @@ class BookServiceTest {
     @Test
     void shouldReturnBook() {
         // given
+        UUID bookId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        Book book = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), false, userId);
+        Book book = new Book(bookId, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), false, userId);
         bookRepository.save(book);
 
         // when
-        bookService.returnBook(1L, userId);
+        bookService.returnBook(bookId, userId);
 
         // then
-        Book returnedBook = bookRepository.findById(1L).orElseThrow();
+        Book returnedBook = bookRepository.findById(bookId).orElseThrow();
         assertThat(returnedBook)
                 .returns(true, Book::isAvailable)
                 .returns(null, Book::getBorrowedBy);
@@ -143,8 +147,10 @@ class BookServiceTest {
     void shouldReleaseAllForUser() {
         // given
         UUID userId = UUID.randomUUID();
-        Book book1 = new Book(1L, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), false, userId);
-        Book book2 = new Book(2L, "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false, userId);
+        UUID bookId1 = UUID.randomUUID();
+        UUID bookId2 = UUID.randomUUID();
+        Book book1 = new Book(bookId1, "123456789", "Book One", "Author One", 300, LocalDate.of(2020, 1, 1), false, userId);
+        Book book2 = new Book(bookId2, "987654321", "Book Two", "Author Two", 150, LocalDate.of(2021, 6, 15), false, userId);
         bookRepository.save(book1);
         bookRepository.save(book2);
 
@@ -152,9 +158,11 @@ class BookServiceTest {
         bookService.releaseAllForUser(userId);
 
         // then
-        assertThat(bookRepository.findById(1L).orElseThrow())
-                .returns(true, Book::isAvailable);
-        assertThat(bookRepository.findById(2L).orElseThrow())
-                .returns(true, Book::isAvailable);
+        assertThat(bookRepository.findById(bookId1).orElseThrow())
+                .returns(true, Book::isAvailable)
+                .returns(null, Book::getBorrowedBy);
+        assertThat(bookRepository.findById(bookId2).orElseThrow())
+                .returns(true, Book::isAvailable)
+                .returns(null, Book::getBorrowedBy);
     }
 }

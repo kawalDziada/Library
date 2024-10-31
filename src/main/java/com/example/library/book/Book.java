@@ -21,7 +21,7 @@ import com.example.library.book.dto.NewBookDto;
 class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private UUID id;
 
     private String isbn;
     private String name;

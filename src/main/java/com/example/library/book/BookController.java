@@ -26,30 +26,30 @@ class BookController {
     }
 
     @GetMapping("/{id}")
-    public BookDto getBookById(@PathVariable Long id) {
+    public BookDto getBookById(@PathVariable UUID id) {
         return bookService.getBookById(id);
     }
 
     @PostMapping
-    public Long createBook(@RequestBody NewBookDto newBookDto) {
-        Long bookId = bookService.createBook(newBookDto);
+    public UUID createBook(@RequestBody NewBookDto newBookDto) {
+        UUID bookId = bookService.createBook(newBookDto);
         log.info("Book {} registered with ID {}", newBookDto.getName(), bookId);
         return bookId;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Long id) {
+    public void deleteBook(@PathVariable UUID id) {
         bookService.deleteBook(id);
         log.info("Book with ID {} was deleted.", id);
     }
 
     @PatchMapping("/borrow")
-    public void borrowBook(@RequestParam Long id, @RequestParam UUID userId) {
+    public void borrowBook(@RequestParam UUID id, @RequestParam UUID userId) {
         bookService.borrowBook(id, userId);
     }
 
     @PatchMapping("/return")
-    public void returnBook(@RequestParam Long id, @RequestParam UUID userId) {
+    public void returnBook(@RequestParam UUID id, @RequestParam UUID userId) {
         bookService.returnBook(id, userId);
     }
 
