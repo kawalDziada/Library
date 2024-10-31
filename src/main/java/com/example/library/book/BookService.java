@@ -36,7 +36,7 @@ public class BookService {
     }
 
     UUID createBook(NewBookDto newBookDto) {
-        var book = bookMapper.fromNewBookDto(newBookDto);
+        Book book = bookMapper.fromNewBookDto(newBookDto);
         bookRepository.save(book);
         return book.getId();
     }

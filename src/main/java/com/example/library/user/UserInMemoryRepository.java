@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UserInMemoryRepository extends BaseInMemoryRepository<User, UUID> implements UserRepository {
+class UserInMemoryRepository extends BaseInMemoryRepository<User, UUID> implements UserRepository {
     private final Map<UUID, User> userStorage = new ConcurrentHashMap<>();
 
     @Override
