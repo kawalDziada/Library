@@ -15,9 +15,10 @@ import java.util.NoSuchElementException;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     private static class BookNotFoundException extends NoSuchElementException {
-        private BookNotFoundException(Long id) {
+        private BookNotFoundException(UUID id) {
             super("Book not found with ID " + id);
         }
     }
@@ -28,25 +29,25 @@ public class BookService {
             .toList();
     }
 
-    BookDto getBookById(Long id) {
+    BookDto getBookById(UUID id) {
         return bookRepository.findById(id)
             .map(this::mapToDto)
             .orElseThrow(() -> new BookNotFoundException(id));
     }
 
-    Long createBook(NewBookDto newBookDto) {
-        Book book = Book.ofNew(newBookDto);
+    UUID createBook(NewBookDto newBookDto) {
+        Book book = bookMapper.fromNewBookDto(newBookDto);
         bookRepository.save(book);
         return book.getId();
     }
 
-    void deleteBook(Long id) {
+    void deleteBook(UUID id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
         bookRepository.delete(book);
     }
 
-    void borrowBook(Long id, UUID userId) {
+    void borrowBook(UUID id, UUID userId) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
         if (!book.isAvailable()) {
@@ -56,7 +57,7 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    void returnBook(Long id, UUID userId) {
+    void returnBook(UUID id, UUID userId) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException(id));
         if (!book.isBorrowedBy(userId)) {
